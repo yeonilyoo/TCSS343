@@ -19,6 +19,7 @@ public class tcss343 {
             // END OF PRINTING ARRAY */
 
             dynamic(array);
+            divideAndConquer(array);
             bruteforce(array);
         } catch(IOException e) {
             System.out.println(e);
@@ -26,16 +27,57 @@ public class tcss343 {
     }
 
     public static void bruteforce(int[][] array) {
-        Datapath n = new tcss343().bruteforce(array, array.length - 1);
-        System.out.println("Brute Force: "+ n.value);
-        System.out.println("Brute Force Path: " + n.path);
+        int shortest[] = new int[array.length-2];
+        int cheapest = array[0][array.length-1];
+        int storage[] = new int[array.length-2];
+
+        for(int j = 0; j < array.length-2; j++)
+            shortest[j] = 0;
+
+        for(long i = 1; i < Math.pow(2, array.length-2); i++) {
+            for(int j = 0; j < array.length-2; j++) {
+                if((i & (1L << j)) != 0)
+                    storage[j]=1;
+                else
+                    storage[j]=0;
+            }
+
+            int cost = 0;
+            int pointer = 0;
+            for(int j = 0; j < array.length-2; j++) {
+                if(storage[j] == 1) {
+                    cost += array[pointer][j+1];
+                    pointer = j+1;
+                }
+            }
+            cost += array[pointer][array.length-1];
+            if(cost < cheapest) {
+                cheapest = cost;
+                //shortest = storage;
+                for(int j = 0; j < array.length-2; j++)
+                    shortest[j] = storage[j];
+            }
+        }
+
+        System.out.println("Brute Force : " + cheapest);
+        System.out.print("Brute Force Path : 0");
+        for(int j = 0; j < array.length-2; j++)
+            if(shortest[j] == 1)
+                System.out.print(" -> " + (j+1));
+        System.out.println(" -> " + (array.length-1));
     }
 
-    public Datapath bruteforce(int[][] array, int point) {
+    public static void divideAndConquer(int[][] array) {
+        Datapath n = new tcss343().divideAndConquer(array, array.length - 1);
+        System.out.println("Divide and Conquer: "+ n.value);
+        System.out.println("Divide and Conquer Path: " + n.path);
+    }
+
+    public Datapath divideAndConquer(int[][] array, int point) {
         int min = array[0][point];
         String path = Integer.toString(point)+" ";
         for(int i = 1; i < point; i++) {
-            Datapath data = bruteforce(array, i);
+            Datapath data = divideAndConquer(array, i);
             int temp = data.value + array[i][point];
             if(temp < min) {
                 min = temp;
@@ -43,15 +85,6 @@ public class tcss343 {
             }
         }
         return  new Datapath(min, path);
-    }
-
-    public static void divideconquer(int[][] array) {
-        int storage[][] = new int[2][array.length];
-        for(int i = 0; i < array.length;i++){
-            for(int j=0; j < i; j++) {
-
-            }
-        }
     }
 
     public static void dynamic(int[][] array) {
