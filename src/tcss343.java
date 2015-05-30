@@ -27,44 +27,44 @@ public class tcss343 {
     }
 
     public static void bruteforce(int[][] array) {
-        int shortest[] = new int[array.length-2];
-        int cheapest = array[0][array.length-1];
-        int storage[] = new int[array.length-2];
-
-        for(int j = 0; j < array.length-2; j++)
+        int shortest[] = new int[array.length-2];   //Storage that will contain shortest path
+        int cheapest = array[0][array.length-1];    //Initializing cheapest path to from 0 to n
+        int storage[] = new int[array.length-2];    //Storage that will contain for testing path
+                                                    //Storage points from array's 1~n-1, so it's off by 1
+        for(int j = 0; j < array.length-2; j++)     //Setting path to zero
             shortest[j] = 0;
 
-        for(long i = 1; i < Math.pow(2, array.length-2); i++) {
-            for(int j = 0; j < array.length-2; j++) {
+        for(long i = 1; i < Math.pow(2, array.length-2); i++) { //Loop 2^n times, brute force every possibility
+            //Setting up bits
+            for(int j = 0; j < array.length-2; j++) {           //Checking if Jth bit is active
                 if((i & (1L << j)) != 0)
                     storage[j]=1;
                 else
                     storage[j]=0;
             }
 
-            int cost = 0;
-            int pointer = 0;
+            int cost = 0;                                       //cost which keeps track new path's cost
+            int pointer = 0;                                    //Pointer which keeps track row
             for(int j = 0; j < array.length-2; j++) {
-                if(storage[j] == 1) {
-                    cost += array[pointer][j+1];
-                    pointer = j+1;
+                if(storage[j] == 1) {                           //if Jth bit is active, take that path
+                    cost += array[pointer][j+1];                //Add path's cost
+                    pointer = j+1;                              //jump the row
                 }
             }
-            cost += array[pointer][array.length-1];
-            if(cost < cheapest) {
+            cost += array[pointer][array.length-1];             //Add final path cost
+            if(cost < cheapest) {                               //Check if cost is cheaper than before
                 cheapest = cost;
-                //shortest = storage;
-                for(int j = 0; j < array.length-2; j++)
+                for(int j = 0; j < array.length-2; j++) //rewrite path, but array is pointer so writing one by one
                     shortest[j] = storage[j];
             }
         }
-
+        //Printing result of brute force
         System.out.println("Brute Force : " + cheapest);
-        System.out.print("Brute Force Path : 0");
+        System.out.print("Brute Force Path : [0");
         for(int j = 0; j < array.length-2; j++)
             if(shortest[j] == 1)
                 System.out.print(" -> " + (j+1));
-        System.out.println(" -> " + (array.length-1));
+        System.out.println(" -> " + (array.length-1) + "]");
     }
 
     public static void divideAndConquer(int[][] array) {
