@@ -24,9 +24,14 @@ public class tcss343 {
 
             startTime = System.currentTimeMillis();
             dynamic(array);
+<<<<<<< HEAD
             endTime =  System.currentTimeMillis();
             writeTimeResultsToFile("Dynamic", startTime, endTime, array.length);
 
+=======
+            divideAndConquer(array);
+            bruteforce(array);
+>>>>>>> 80e24cad2cabaa0d0a26734f7178a65d50932be4
         } catch(IOException e) {
             System.out.println(e);
         }
@@ -72,7 +77,11 @@ public class tcss343 {
         int shortest[] = new int[array.length-2];   //Storage that will contain shortest path
         int cheapest = array[0][array.length-1];    //Initializing cheapest path to from 0 to n
         int storage[] = new int[array.length-2];    //Storage that will contain for testing path
+<<<<<<< HEAD
         //Storage points from array's 1~n-1, so it's off by 1
+=======
+                                                    //Storage points from array's 1~n-1, so it's off by 1
+>>>>>>> 80e24cad2cabaa0d0a26734f7178a65d50932be4
         for(int j = 0; j < array.length-2; j++)     //Setting path to zero
             shortest[j] = 0;
 
@@ -80,7 +89,10 @@ public class tcss343 {
             int cost = 0;                                       //cost which keeps track new path's cost
             int pointer = 0;                                    //Pointer which keeps track row
             //Setting up bits
+<<<<<<< HEAD
             System.out.println(i);
+=======
+>>>>>>> 80e24cad2cabaa0d0a26734f7178a65d50932be4
             for(int j = 0; j < array.length-2; j++) {           //Checking if Jth bit is active
                 if((i & (1L << j)) != 0) {
                     storage[j] = 1;
@@ -108,8 +120,13 @@ public class tcss343 {
 
     public static void divideAndConquer(int[][] array) {
         Datapath n = new tcss343().divideAndConquer(array, array.length - 1);
+<<<<<<< HEAD
         System.out.println("Minimum Weight Divide and Conquer: "+ n.value);
         System.out.println("Divide and Conquer: [ 0 -> " + n.path+ " ]");
+=======
+        System.out.println("Divide and Conquer: "+ n.value);
+        System.out.println("Divide and Conquer Path: " + n.path);
+>>>>>>> 80e24cad2cabaa0d0a26734f7178a65d50932be4
     }
 
     public Datapath divideAndConquer(int[][] array, int point) {
@@ -124,15 +141,6 @@ public class tcss343 {
             }
         }
         return  new Datapath(min, path);
-    }
-
-    public static void divideconquer(int[][] array) {
-        int storage[][] = new int[2][array.length];
-        for(int i = 0; i < array.length;i++){
-            for(int j=0; j < i; j++) {
-
-            }
-        }
     }
 
     public static void dynamic(int[][] array) {
