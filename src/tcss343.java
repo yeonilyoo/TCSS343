@@ -35,22 +35,18 @@ public class tcss343 {
             shortest[j] = 0;
 
         for(long i = 1; i < Math.pow(2, array.length-2); i++) { //Loop 2^n times, brute force every possibility
+            int cost = 0;                                       //cost which keeps track new path's cost
+            int pointer = 0;                                    //Pointer which keeps track row
             //Setting up bits
             for(int j = 0; j < array.length-2; j++) {           //Checking if Jth bit is active
-                if((i & (1L << j)) != 0)
-                    storage[j]=1;
-                else
+                if((i & (1L << j)) != 0) {
+                    storage[j] = 1;
+                    cost += array[pointer][j+1];                //Add path's cost
+                    pointer = j+1;                              //jump the row
+                } else
                     storage[j]=0;
             }
 
-            int cost = 0;                                       //cost which keeps track new path's cost
-            int pointer = 0;                                    //Pointer which keeps track row
-            for(int j = 0; j < array.length-2; j++) {
-                if(storage[j] == 1) {                           //if Jth bit is active, take that path
-                    cost += array[pointer][j+1];                //Add path's cost
-                    pointer = j+1;                              //jump the row
-                }
-            }
             cost += array[pointer][array.length-1];             //Add final path cost
             if(cost < cheapest) {                               //Check if cost is cheaper than before
                 cheapest = cost;
