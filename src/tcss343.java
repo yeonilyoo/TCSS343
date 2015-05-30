@@ -1,45 +1,126 @@
 import java.io.*;
+import java.util.Random;
 import java.util.Stack;
 
 /**
  * Created by Yeonil on 5/27/2015.
  */
 public class tcss343 {
-    public static void main(String[] args) {
-//        System.out.println(System.getProperty("user.dir"));   //To find directory
-        int[][] array;
+    public static void main(String[] args) throws IOException {
+       // createTestFiles(); //Creates random files filled with test arrays
         try {
-            array = readFile(args[0]);  //Taking argument is requirement
-            //* PRINT FULL ARRAY
-            for(int i = 0; i < array.length; i++) {
-                for (int j = 0; j < array.length; j++)
-                    System.out.print(array[i][j] + "\t");
-                System.out.println();
-            }
-            // END OF PRINTING ARRAY */
+            int[][] array = readFile(args[1]); //Taking argument is requirement
+            //printMatrix(array);
 
+            double startTime = System.currentTimeMillis();
+            //bruteforce(array);
+            double endTime =  System.currentTimeMillis();
+            writeTimeResultsToFile("Brute Force", startTime, endTime, array.length);
+
+            startTime = System.currentTimeMillis();
+            divideAndConquer(array);
+            endTime =  System.currentTimeMillis();
+            writeTimeResultsToFile("Divide and Conquer", startTime, endTime, array.length);
+
+            startTime = System.currentTimeMillis();
             dynamic(array);
-            bruteforce(array);
+            endTime =  System.currentTimeMillis();
+            writeTimeResultsToFile("Dynamic", startTime, endTime, array.length);
+
         } catch(IOException e) {
             System.out.println(e);
         }
     }
 
-    public static void bruteforce(int[][] array) {
-        Datapath n = new tcss343().bruteforce(array, array.length - 1);
-        System.out.println("Brute Force: "+ n.value);
-        System.out.println("Brute Force Path: " + n.path);
+
+    private static void writeTimeResultsToFile(String method_name, double start, double end, int size) {
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(new File("time_results.csv"), true));
+            bw.write(method_name + "\n");
+            bw.write(size + "," + ((end - start) / 1000) + "\n");
+            bw.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        System.out.println("Done Printing Results...");
     }
 
-    public Datapath bruteforce(int[][] array, int point) {
+    private static void createTestFiles(){
+        int[][] testArray;
+        try {
+            testArray = createMatrix(30);
+            arrayToText(testArray, "test_matrix0.txt");
+            testArray = createMatrix(100);
+            arrayToText(testArray, "test_matrix1.txt");
+            testArray = createMatrix(200);
+            arrayToText(testArray, "test_matrix2.txt");
+            testArray = createMatrix(400);
+            arrayToText(testArray, "test_matrix3.txt");
+            testArray = createMatrix(600);
+            arrayToText(testArray, "test_matrix4.txt");
+            testArray = createMatrix(800);
+            arrayToText(testArray, "test_matrix5.txt");
+        } catch (Exception e) {
+
+        }
+
+    }
+
+
+
+    public static void bruteforce(int[][] array) {
+        int shortest[] = new int[array.length-2];   //Storage that will contain shortest path
+        int cheapest = array[0][array.length-1];    //Initializing cheapest path to from 0 to n
+        int storage[] = new int[array.length-2];    //Storage that will contain for testing path
+        //Storage points from array's 1~n-1, so it's off by 1
+        for(int j = 0; j < array.length-2; j++)     //Setting path to zero
+            shortest[j] = 0;
+
+        for(long i = 1; i < Math.pow(2, array.length-2); i++) { //Loop 2^n times, brute force every possibility
+            int cost = 0;                                       //cost which keeps track new path's cost
+            int pointer = 0;                                    //Pointer which keeps track row
+            //Setting up bits
+            System.out.println(i);
+            for(int j = 0; j < array.length-2; j++) {           //Checking if Jth bit is active
+                if((i & (1L << j)) != 0) {
+                    storage[j] = 1;
+                    cost += array[pointer][j+1];                //Add path's cost
+                    pointer = j+1;                              //jump the row
+                } else
+                    storage[j]=0;
+            }
+
+            cost += array[pointer][array.length-1];             //Add final path cost
+            if(cost < cheapest) {                               //Check if cost is cheaper than before
+                cheapest = cost;
+                for(int j = 0; j < array.length-2; j++) //rewrite path, but array is pointer so writing one by one
+                    shortest[j] = storage[j];
+            }
+        }
+        //Printing result of brute force
+        System.out.println("Brute Force : " + cheapest);
+        System.out.print("Brute Force Path : [0");
+        for(int j = 0; j < array.length-2; j++)
+            if(shortest[j] == 1)
+                System.out.print(" -> " + (j+1));
+        System.out.println(" -> " + (array.length-1) + "]");
+    }
+
+    public static void divideAndConquer(int[][] array) {
+        Datapath n = new tcss343().divideAndConquer(array, array.length - 1);
+        System.out.println("Minimum Weight Divide and Conquer: "+ n.value);
+        System.out.println("Divide and Conquer: [ 0 -> " + n.path+ " ]");
+    }
+
+    public Datapath divideAndConquer(int[][] array, int point) {
         int min = array[0][point];
-        String path = Integer.toString(point)+" ";
+        String path = Integer.toString(point);
         for(int i = 1; i < point; i++) {
-            Datapath data = bruteforce(array, i);
+            Datapath data = divideAndConquer(array, i);
             int temp = data.value + array[i][point];
             if(temp < min) {
                 min = temp;
-                path = data.path + Integer.toString(point) + " ";
+                path = data.path + " -> " + Integer.toString(point);
             }
         }
         return  new Datapath(min, path);
@@ -69,6 +150,7 @@ public class tcss343 {
             storage[0][i]=shortest;             //Store lowest cost
             storage[1][i]=used;                 //Store path
         }                                       //End of finding lowest cost
+        //printMatrix(storage);
         System.out.println("Dynamic Programming: "+storage[0][array.length-1]); //Printing Lowest cost
 
         // Grabing Path
@@ -79,10 +161,10 @@ public class tcss343 {
             pointer = storage[1][pointer];
         }                                       //End of iteration, now stack has full path to nth
         //Start printing Path
-        System.out.print("Dynamic Programming Path: ");
+        System.out.print("Dynamic Programming Path: [ 0");
         while(!path.isEmpty())                  //Print until stack is empty.
-            System.out.print(path.pop() + " ");
-        System.out.println();
+            System.out.print(" -> "+path.pop());
+        System.out.println(" ]");
     }
 
     /**
@@ -123,8 +205,68 @@ public class tcss343 {
         return array;                                       //Return 2D array
     }
 
+    private static void printMatrix(int[][] matrix) {
+        int n = matrix.length;
+        int m = matrix[0].length;
+        for (int i = 0; i < n; i++) {
+            System.out.print("|");
+            for (int j = 0; j < m; j++) {
+                System.out.print(matrix[i][j]);
+                if(j != m - 1) {
+                    System.out.print("\t");
+                }
+                if(j == m-1) {
+                    System.out.print("|");
+                }
+            }
+
+            System.out.print("\n");
+        }
+        System.out.print("\n");
+    }
+
+    private static int[][] createMatrix(int size) {
+        Random value = new Random();
+        int[][] randArray = new int[size][size];
+        for(int i = 0; i < size; i++) {
+            for(int j = 0; j < size; j++) {
+                if( i > j ) {
+                    randArray[i][j] = -1;
+                }else if(i == j){
+                    randArray[i][j] = 0;
+                }else{
+                    randArray[i][j] = value.nextInt(8) + 1;
+                }
+            }
+        }
+        return randArray;
+
+    }
+
+    private static void arrayToText(int[][] arr, String fileName) throws IOException {
+        BufferedWriter matrix = new BufferedWriter(new FileWriter(fileName));
+        int n = arr.length;
+        int m = arr[0].length;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if( arr[i][j] == -1) {
+                    matrix.write("NA\t");
+                }else{
+                    matrix.write(Integer.toString(arr[i][j]));
+                    if(j != m - 1) {
+                        matrix.write("\t");
+                    }
+                }
+            }
+            matrix.newLine();
+        }
+        matrix.flush();
+        matrix.close();
+
+    }
+
     /**
-     * Datapath is being used by bruteforce method. Datapath is required only because bruthforce needs to return
+     * Datapath is being used by bruteforce method. Datapath is required only because bruteforce needs to return
      * two value (int value, String path).
      */
     private class Datapath {
