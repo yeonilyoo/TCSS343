@@ -7,31 +7,33 @@ import java.util.Stack;
  */
 public class tcss343 {
     public static void main(String[] args) throws IOException {
-       // createTestFiles(); //Creates random files filled with test arrays
+        //createTestFiles(); //Creates random files filled with test arrays
+        //*
         try {
-            int[][] array = readFile(args[1]); //Taking argument is requirement
-            //printMatrix(array);
+            double startTime, endTime;
+            for(int i = 1; i <= 6; i++) {
+                int[][] array = readFile(args[i]); //Taking argument is requirement
+                System.out.println(i+" ----------------------------");
 
-            double startTime = System.currentTimeMillis();
-            //bruteforce(array);
-            double endTime =  System.currentTimeMillis();
-            writeTimeResultsToFile("Brute Force", startTime, endTime, array.length);
+                startTime = System.currentTimeMillis();
+                dynamic(array);
+                endTime = System.currentTimeMillis();
+                writeTimeResultsToFile("Dynamic", startTime, endTime, array.length);
 
-            startTime = System.currentTimeMillis();
-            divideAndConquer(array);
-            endTime =  System.currentTimeMillis();
-            writeTimeResultsToFile("Divide and Conquer", startTime, endTime, array.length);
+                startTime = System.currentTimeMillis();
+                divideAndConquer(array);
+                endTime = System.currentTimeMillis();
+                writeTimeResultsToFile("Divide and Conquer", startTime, endTime, array.length);
 
-            startTime = System.currentTimeMillis();
-            dynamic(array);
-            endTime =  System.currentTimeMillis();
-            writeTimeResultsToFile("Dynamic", startTime, endTime, array.length);
-
-            divideAndConquer(array);
-            bruteforce(array);
+                startTime = System.currentTimeMillis();
+                bruteforce(array);
+                endTime = System.currentTimeMillis();
+                writeTimeResultsToFile("Brute Force", startTime, endTime, array.length);
+            }
         } catch(IOException e) {
             System.out.println(e);
         }
+        //*/
     }
 
 
@@ -50,17 +52,17 @@ public class tcss343 {
     private static void createTestFiles(){
         int[][] testArray;
         try {
-            testArray = createMatrix(30);
+            testArray = createMatrix(10);
             arrayToText(testArray, "test_matrix0.txt");
-            testArray = createMatrix(100);
+            testArray = createMatrix(15);
             arrayToText(testArray, "test_matrix1.txt");
-            testArray = createMatrix(200);
+            testArray = createMatrix(20);
             arrayToText(testArray, "test_matrix2.txt");
-            testArray = createMatrix(400);
+            testArray = createMatrix(25);
             arrayToText(testArray, "test_matrix3.txt");
-            testArray = createMatrix(600);
+            testArray = createMatrix(30);
             arrayToText(testArray, "test_matrix4.txt");
-            testArray = createMatrix(800);
+            testArray = createMatrix(35);
             arrayToText(testArray, "test_matrix5.txt");
         } catch (Exception e) {
 
@@ -83,7 +85,7 @@ public class tcss343 {
             int cost = 0;                                       //cost which keeps track new path's cost
             int pointer = 0;                                    //Pointer which keeps track row
             //Setting up bits
-            System.out.println(i);
+            //System.out.println(i);
             for(int j = 0; j < array.length-2; j++) {           //Checking if Jth bit is active
                 if((i & (1L << j)) != 0) {
                     storage[j] = 1;
