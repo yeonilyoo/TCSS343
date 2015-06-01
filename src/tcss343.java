@@ -11,7 +11,7 @@ public class tcss343 {
         //*
         try {
             double startTime, endTime;
-            for(int i = 1; i <= 6; i++) {
+            for(int i = 1; i <= 8; i++) {
                 int[][] array = readFile(args[i]); //Taking argument is requirement
                 System.out.println(i+" ----------------------------");
 
@@ -19,7 +19,7 @@ public class tcss343 {
                 dynamic(array);
                 endTime = System.currentTimeMillis();
                 writeTimeResultsToFile("Dynamic", startTime, endTime, array.length);
-
+/*
                 startTime = System.currentTimeMillis();
                 divideAndConquer(array);
                 endTime = System.currentTimeMillis();
@@ -29,6 +29,7 @@ public class tcss343 {
                 bruteforce(array);
                 endTime = System.currentTimeMillis();
                 writeTimeResultsToFile("Brute Force", startTime, endTime, array.length);
+*/
             }
         } catch(IOException e) {
             System.out.println(e);
@@ -52,18 +53,22 @@ public class tcss343 {
     private static void createTestFiles(){
         int[][] testArray;
         try {
-            testArray = createMatrix(10);
+            testArray = createMatrix(1000);
             arrayToText(testArray, "test_matrix0.txt");
-            testArray = createMatrix(15);
+            testArray = createMatrix(2000);
             arrayToText(testArray, "test_matrix1.txt");
-            testArray = createMatrix(20);
+            testArray = createMatrix(3000);
             arrayToText(testArray, "test_matrix2.txt");
-            testArray = createMatrix(25);
+            testArray = createMatrix(4000);
             arrayToText(testArray, "test_matrix3.txt");
-            testArray = createMatrix(30);
+            testArray = createMatrix(5000);
             arrayToText(testArray, "test_matrix4.txt");
-            testArray = createMatrix(35);
+            testArray = createMatrix(6000);
             arrayToText(testArray, "test_matrix5.txt");
+            testArray = createMatrix(7000);
+            arrayToText(testArray, "test_matrix6.txt");
+            testArray = createMatrix(8000);
+            arrayToText(testArray, "test_matrix7.txt");
         } catch (Exception e) {
 
         }
@@ -77,7 +82,6 @@ public class tcss343 {
         int cheapest = array[0][array.length-1];    //Initializing cheapest path to from 0 to n
         int storage[] = new int[array.length-2];    //Storage that will contain for testing path
         //Storage points from array's 1~n-1, so it's off by 1
-                                                    //Storage points from array's 1~n-1, so it's off by 1
         for(int j = 0; j < array.length-2; j++)     //Setting path to zero
             shortest[j] = 0;
 
