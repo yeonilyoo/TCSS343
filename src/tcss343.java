@@ -3,41 +3,47 @@ import java.util.Random;
 import java.util.Stack;
 
 /**
- * Created by Yeonil on 5/27/2015.
+ * Yeonil Yoo, Antonio Orozco, Zack Parker
+ * Programming Assignment for TCSS343
  */
 public class tcss343 {
     public static void main(String[] args) throws IOException {
         //createTestFiles(); //Creates random files filled with test arrays
-        //*
         try {
             double startTime, endTime;
-            for(int i = 1; i <= 8; i++) {
-                int[][] array = readFile(args[i]); //Taking argument is requirement
-                System.out.println(i+" ----------------------------");
-
+            //Arguments are given as "sample_input.txt" "test_matrix0.txt" "test_matrix1.txt"...
+            //Buf even if 1 arguments, program works fine :)
+            for(int i = 0; i < args.length; i++) {
+                int[][] array = readFile(args[i]); //Read array from file
+                //Run Dynamic
                 startTime = System.currentTimeMillis();
                 dynamic(array);
                 endTime = System.currentTimeMillis();
                 writeTimeResultsToFile("Dynamic", startTime, endTime, array.length);
-/*
+                //Run Divide and Conquer
                 startTime = System.currentTimeMillis();
                 divideAndConquer(array);
                 endTime = System.currentTimeMillis();
                 writeTimeResultsToFile("Divide and Conquer", startTime, endTime, array.length);
-
+                //Run Brute Force
                 startTime = System.currentTimeMillis();
                 bruteforce(array);
                 endTime = System.currentTimeMillis();
                 writeTimeResultsToFile("Brute Force", startTime, endTime, array.length);
-*/
             }
         } catch(IOException e) {
             System.out.println(e);
         }
-        //*/
     }
 
-
+    /**
+     * writeTimeResultsToFile is being called from main method to store data to time_results.csv file.
+     * It will take start and end time of algorithm and automatically compute the run time of algorithm
+     * @param method_name string that will store data if it is dynamic, brute force, or divide and conquer
+     * @param start start time of algorithm
+     * @param end end time of algorithm
+     * @param size size of the array
+     */
     private static void writeTimeResultsToFile(String method_name, double start, double end, int size) {
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(new File("time_results.csv"), true));
@@ -50,6 +56,9 @@ public class tcss343 {
         System.out.println("Done Printing Results...");
     }
 
+    /**
+     * createTestFile creates multiple text file by arrayToText with given array size by using createMatrix
+     */
     private static void createTestFiles(){
         int[][] testArray;
         try {
@@ -76,7 +85,10 @@ public class tcss343 {
     }
 
 
-
+    /**
+     * bruteforce finds lowest cost and path using brute force, checking every possibility
+     * @param array 2D array to find the minimum
+     */
     public static void bruteforce(int[][] array) {
         int shortest[] = new int[array.length-2];   //Storage that will contain shortest path
         int cheapest = array[0][array.length-1];    //Initializing cheapest path to from 0 to n
@@ -115,6 +127,12 @@ public class tcss343 {
         System.out.println(" -> " + (array.length-1) + "]");
     }
 
+    /**
+     * divideAndConquer prints the lowest value and the solution.
+     * This method implements shortest path algorithm without using graph.
+     * Instead of graph, it uses array's index as vertex and array's value as edge's weight.
+     * @param array 2D array to find the minimum
+     */
     public static void divideAndConquer(int[][] array) {
         Datapath n = new tcss343().divideAndConquer(array, array.length - 1);
         System.out.println("Minimum Weight Divide and Conquer: "+ n.value);
@@ -123,20 +141,29 @@ public class tcss343 {
         System.out.println("Divide and Conquer Path: " + n.path);
     }
 
+    /**
+     * divideAndConquer finds the lowest cost using divide and conquer
+     * @param array 2D int array to find the minimum
+     * @param point the int point in the matix that is final destination
+     */
     public Datapath divideAndConquer(int[][] array, int point) {
         int min = array[0][point];
         String path = Integer.toString(point);
-        for(int i = 1; i < point; i++) {
-            Datapath data = divideAndConquer(array, i);
-            int temp = data.value + array[i][point];
-            if(temp < min) {
-                min = temp;
+        for(int i = 1; i < point; i++) {                //Go through every possible route to reach current
+            Datapath data = divideAndConquer(array, i); //Recurive call divideAndConquer to find other route cost
+            int temp = data.value + array[i][point];    //Add previous route cost and previous route to current cost
+            if(temp < min) {                            //Compare to find which cost less
+                min = temp;                             //Replace cost
                 path = data.path + " -> " + Integer.toString(point);
             }
         }
         return  new Datapath(min, path);
     }
 
+    /**
+     * dynamic finds the lowest cost using dynamic programming.
+     * @param array 2D array to find the minimum
+     */
     public static void dynamic(int[][] array) {
         int storage[][] = new int[2][array.length];
         for(int i = 0; i < array.length; i++) { //Finding lowest cost with dynamic programming approach
@@ -207,6 +234,10 @@ public class tcss343 {
         return array;                                       //Return 2D array
     }
 
+    /**
+     * printMatrix prints any given 2D array onto the console into matrix form
+     * @param matrix is the 2D int matrix array to print
+     */
     private static void printMatrix(int[][] matrix) {
         int n = matrix.length;
         int m = matrix[0].length;
@@ -227,6 +258,11 @@ public class tcss343 {
         System.out.print("\n");
     }
 
+    /**
+     * createMatrix creates a random n x n matrix with values 1 - 9.
+     * @param size it the size of the matrix
+     * @return is the randomized matrix
+     */
     private static int[][] createMatrix(int size) {
         Random value = new Random();
         int[][] randArray = new int[size][size];
@@ -245,6 +281,11 @@ public class tcss343 {
 
     }
 
+    /**
+     * arrayToText takes a 2D array and creates a text file.
+     * @param arr is the 2D array to convert
+     * @param fileName is the file that you want to save it to
+     */
     private static void arrayToText(int[][] arr, String fileName) throws IOException {
         BufferedWriter matrix = new BufferedWriter(new FileWriter(fileName));
         int n = arr.length;
